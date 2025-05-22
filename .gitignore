@@ -1,33 +1,41 @@
-# Gradle files
+# ── Gradle ─────────────────────────────────────────────
 .gradle/
 build/
 
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Log/OS Files
-*.log
-
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.apk
-output.json
-
-# IntelliJ
-*.iml
-.idea/
+# ── IDE / Editor files ────────────────────────────────
+*.iml                     # IntelliJ / Android Studio module files
+.idea/                    # Whole IDE config
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
-# Keystore files
+# ── Local machine settings ────────────────────────────
+local.properties          # SDK paths, etc.
+.DS_Store                 # macOS finder cruft
+
+# ── Logs ───────────────────────────────────────────────
+*.log
+
+# ── Build / Output artifacts ──────────────────────────
+*.apk
+output.json
+captures/
+.externalNativeBuild/
+.externalNativeBuild      # (duplicate-safe for some tools)
+.cxx/
+
+# ── Google & Firebase ─────────────────────────────────
+google-services.json
+
+# ── Keystores ─────────────────────────────────────────
 *.jks
 *.keystore
 
-# Google Services (e.g. APIs or Firebase)
-google-services.json
-
-# Android Profiling
+# ── Profiling & Heap dumps ────────────────────────────
 *.hprof
