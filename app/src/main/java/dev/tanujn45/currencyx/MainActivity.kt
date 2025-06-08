@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import dev.tanujn45.currencyx.ui.screens.home.HomeScreen
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
+import dev.tanujn45.currencyx.ui.screens.home.ExampleUsage
 import dev.tanujn45.currencyx.ui.theme.CurrencyXTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +16,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CurrencyXTheme {
-                HomeScreen()
+                Scaffold { innerPadding ->
+//                    HomeScreen(modifier = Modifier.padding(innerPadding))
+                    ExampleUsage(modifier = Modifier.padding(innerPadding))
+                }
             }
         }
     }
