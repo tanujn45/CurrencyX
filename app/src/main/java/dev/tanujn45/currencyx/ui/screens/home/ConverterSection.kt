@@ -25,21 +25,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.tanujn45.currencyx.ui.components.DropdownButton
 import dev.tanujn45.currencyx.ui.components.LineChart
+import dev.tanujn45.currencyx.utils.CurrencyItem
 import dev.tanujn45.currencyx.utils.CurrencyPoint
-import dev.tanujn45.currencyx.utils.usdJan2023
+import dev.tanujn45.currencyx.utils.NUM_DAYS
 
 @Composable
 fun ConverterSection(
-    fromCurrency: String = "USD",
-    toCurrency: String = "EUR",
-    fromAmount: String = "1,000.00",
-    toAmount: String = "920.50",
-    exchangeRate: Float = 0.9205f,
-    lastUpdated: String = "2 min ago",
+    fromCurrency: CurrencyItem,
+    toCurrency: CurrencyItem,
+    fromAmount: String = "1",
+    toAmount: String,
+    exchangeRate: Float,
+    changePercent: Float,
+    lastUpdated: String,
     onFromCurrencyClick: () -> Unit = {},
     onToCurrencyClick: () -> Unit = {},
     onSwapClick: () -> Unit = {},
-    points: List<CurrencyPoint> = usdJan2023
+    points: List<CurrencyPoint>
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -56,22 +58,22 @@ fun ConverterSection(
             ) {
                 Column {
                     Text(
-                        text = "$fromCurrency to $toCurrency",
+                        text = "${fromCurrency.code} to ${toCurrency.code}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "1 $fromCurrency = $exchangeRate $toCurrency",
+                        text = "1 ${fromCurrency.code} = $exchangeRate ${toCurrency.code}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "+0.12%",
+                        text = if (changePercent >= 0) "+$changePercent%" else "$changePercent%",
                         style = MaterialTheme.typography.labelMedium,
-                        color = Color(0xFF4CAF50),
+                        color = if (changePercent >= 0) Color(0xFF4CAF50) else Color(0xFFF44336),
                         fontWeight = FontWeight.Medium
                     )
                     Text(
@@ -132,7 +134,7 @@ fun ConverterSection(
 
             // Chart section
             Text(
-                text = "Exchange Rate Trend (7 days)",
+                text = "Exchange Rate Trend ($NUM_DAYS days)",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,

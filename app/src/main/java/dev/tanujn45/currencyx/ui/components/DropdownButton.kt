@@ -23,13 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.tanujn45.currencyx.utils.CurrencyItem
+import dev.tanujn45.currencyx.utils.getAllCurrencies
 
 @Composable
 fun DropdownButton(
-    currency: String,
-    amount: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    currency: CurrencyItem, amount: String, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
     Surface(
         onClick = onClick,
@@ -49,12 +48,11 @@ fun DropdownButton(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Currency flag placeholder (you can replace with actual flag)
                     CurrencyFlag(
-                        currencyCode = currency,
-                        modifier = Modifier.size(24.dp)
+                        currencyCode = currency.code, modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = currency,
+                        text = currency.code,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -82,8 +80,5 @@ fun DropdownButton(
 @Composable
 fun DropdownButtonPreview() {
     DropdownButton(
-        currency = "USD",
-        amount = "$100",
-        onClick = {}
-    )
+        currency = getAllCurrencies().first(), amount = "$100", onClick = {})
 }

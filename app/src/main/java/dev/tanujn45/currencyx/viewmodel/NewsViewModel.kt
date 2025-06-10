@@ -14,10 +14,10 @@ class NewsViewModel : ViewModel() {
     val newsArticles: StateFlow<NewsUiState> = _newsArticles
 
     init {
-        load("USD", "EUR")
+        loadNews("USD", "EUR")
     }
 
-    private fun load(base: String, target: String) = viewModelScope.launch {
+    fun loadNews(base: String, target: String) = viewModelScope.launch {
         _newsArticles.value = NewsUiState.Loading
 
         repo.forexNews(base, target).onSuccess { list ->

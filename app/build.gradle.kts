@@ -24,9 +24,11 @@ android {
 
         val gNewsKey = props.getProperty("GNEWS_API_KEY")
         val logoToken = props.getProperty("LOGODEV_TOKEN")
+        val exchangeRateApiKey = props.getProperty("EXCHANGE_RATE_HOST_API_KEY")
 
         buildConfigField("String", "GNEWS_API_KEY", "\"$gNewsKey\"")
         buildConfigField("String", "LOGODEV_TOKEN", "\"$logoToken\"")
+        buildConfigField("String", "EXCHANGE_RATE_HOST_API_KEY", "\"$exchangeRateApiKey\"")
     }
 
     buildTypes {
@@ -38,6 +40,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -51,6 +54,7 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

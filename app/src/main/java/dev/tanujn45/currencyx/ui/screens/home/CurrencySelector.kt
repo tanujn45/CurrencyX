@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -56,7 +54,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import dev.tanujn45.currencyx.ui.components.CurrencyFlag
-import dev.tanujn45.currencyx.ui.components.DropdownButton
 import dev.tanujn45.currencyx.utils.CurrencyItem
 import dev.tanujn45.currencyx.utils.getAllCurrencies
 import kotlinx.coroutines.Dispatchers
@@ -71,21 +68,23 @@ private val NumberRegex = Regex(
 fun CurrencySelectorBottomSheet(
     isVisible: Boolean,
     currentAmount: String = "",
-    selectedCurrency: String = "USD",
+    hideInput: Boolean = false,
+    selectedCurrency: CurrencyItem,
     onDismiss: () -> Unit,
     onCurrencySelected: (CurrencyItem, String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
     var searchQuery by remember { mutableStateOf("") }
     var amountInput by remember { mutableStateOf(currentAmount) }
+    var tempSelection by remember { mutableStateOf(selectedCurrency) }
 
-    val currencies by produceState(initialValue = emptyList<CurrencyItem>()) {
+    val currencies by produceState(initialValue = emptyList()) {
         value = withContext(Dispatchers.IO) { getAllCurrencies() }
     }
 
     /* ── 2: filter on a background thread whenever search changes ───── */
     val filteredCurrencies by produceState(
-        initialValue = currencies, key1 = searchQuery,              // triggers recomputation
+        initialValue = currencies, key1 = searchQuery,              // triggers re-computation
         key2 = currencies                // also change if the source list loads
     ) {
         value = withContext(Dispatchers.Default) {
@@ -97,7 +96,6 @@ fun CurrencySelectorBottomSheet(
             }
         }
     }
-    val statusBarDp = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     if (isVisible) {
         ModalBottomSheet(
@@ -112,7 +110,7 @@ fun CurrencySelectorBottomSheet(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                // Top bar with close button
+                // Top bar with close button and check button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -138,7 +136,10 @@ fun CurrencySelectorBottomSheet(
                     )
 
                     IconButton(
-                        onClick = {}, modifier = Modifier.size(40.dp)
+                        onClick = {
+                            onCurrencySelected(tempSelection, amountInput)
+                            onDismiss()
+                        }, modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -148,53 +149,55 @@ fun CurrencySelectorBottomSheet(
                     }
                 }
 
-                // Amount input section
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
+                if (!hideInput) {
+                    // Amount input section
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text(
-                            text = "Amount",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = amountInput,
-                            onValueChange = { new ->
-                                if (NumberRegex.matches(new)) amountInput = new
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = {
-                                Text(
-                                    text = "Enter amount",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done
-                            ),
-                            singleLine = true,
-                            shape = RoundedCornerShape(8.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                    alpha = 0.3f
-                                ), focusedBorderColor = MaterialTheme.colorScheme.primary
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Amount",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
-                        )
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                            OutlinedTextField(
+                                value = amountInput,
+                                onValueChange = { new ->
+                                    if (NumberRegex.matches(new)) amountInput = new
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = {
+                                    Text(
+                                        text = "Enter amount",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done
+                                ),
+                                singleLine = true,
+                                shape = RoundedCornerShape(8.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                        alpha = 0.3f
+                                    ), focusedBorderColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 // Search bar
                 OutlinedTextField(
@@ -246,10 +249,11 @@ fun CurrencySelectorBottomSheet(
                     items(filteredCurrencies) { currency ->
                         CurrencyListItem(
                             currency = currency,
-                            isSelected = currency.code == selectedCurrency,
+                            isSelected = currency == tempSelection,
                             onClick = {
-                                onCurrencySelected(currency, amountInput)
-                            })
+                                tempSelection = currency
+                            }
+                        )
                     }
 
                     if (filteredCurrencies.isEmpty()) {
@@ -362,30 +366,5 @@ fun CurrencyListItem(
                 )
             }
         }
-    }
-}
-
-// Usage example:
-@Composable
-fun ExampleUsage(modifier: Modifier = Modifier) {
-    var showCurrencySelector by remember { mutableStateOf(false) }
-    var selectedCurrency by remember { mutableStateOf("USD") }
-    var amount by remember { mutableStateOf("100.00") }
-
-    Column(modifier = modifier) {
-        // Your existing dropdown button
-        DropdownButton(
-            currency = selectedCurrency, amount = amount, onClick = { showCurrencySelector = true })
-
-        // Currency selector bottom sheet
-        CurrencySelectorBottomSheet(
-            isVisible = showCurrencySelector,
-            currentAmount = amount,
-            selectedCurrency = selectedCurrency,
-            onDismiss = { showCurrencySelector = false },
-            onCurrencySelected = { currency, newAmount ->
-                selectedCurrency = currency.code
-                amount = newAmount
-            })
     }
 }

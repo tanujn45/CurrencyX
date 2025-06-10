@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class NewsRepository {
-    private val api = RetrofitInstance.api
+    private val gNewsApi = RetrofitInstance.gNewsApi
 
     suspend fun forexNews(
         baseCurrency: String, targetCurrency: String
@@ -17,7 +17,7 @@ class NewsRepository {
         runCatching {
             val query = "$baseCurrency $targetCurrency forex OR \"exchange rate\""
 
-            api.searchNews(
+            gNewsApi.searchNews(
                 query = query, apiKey = BuildConfig.GNEWS_API_KEY
             ).articles.map { it.toUi(BuildConfig.LOGODEV_TOKEN) }
         }
